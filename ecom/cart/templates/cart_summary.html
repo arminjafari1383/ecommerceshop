@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+
+{%block content%}
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">shopping cart</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">views your cart...</p>
+                </div>
+            </div>
+        </header>
+        <br/>
+        <div class="container">
+        {% if cart_products %}
+            {% for product in cart_products %}
+            <div class="card mb-3">
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    <img src="{{product.image.url}}" class="img-fluid rounded-start" alt="...">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                        <center>
+                      <h5 class="card-title">{{ product.name }}</h5>
+                      <p class="card-text">{{ product.description }}</p>
+                      {% if product.is_sale %}
+                      <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Sale badge -->
+                             <div class = "badge bg-light text-white position-absolute" style="top: 0.5rem;right: 0.5rem;">Sale</div>
+                            <!-- Product image-->
+                            <img class="card-img-top" src="{{ product.image.url}}" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">{{product.name}}</h5>
+                                    <!-- Product price-->
+                                    <strike>${{product.price}}</strike>
+                                    &nbsp;${{product.sale_price}}
+                      {% else %}
+                      ${{product.price}}
+                      <br />
+                      {% endif %}
+                      <br/> <br/>
+                      <div class = "row justify-content-center">
+                        <div class="col-md-2">quantity</div>
+                        <div class="col-md-2">
+                      <select class="form-select form-select-sum" id="select{{product.id}}" >
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                      </select>
+                        </div>
+                    </div>
+                      <a href="{% url 'home' %}" class="btn btn-secondary">home</a>
+                      <!-- <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">add to cart</button> -->
+                      <button type="button" data-index="{{product.id}}" class="btn btn-secondary update-cart">Upadate</button>
+                      <button type="button" value="{{product.id}}" class="btn btn-danger delete-product" id="add-cart">Remove</button>
+                    </center>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        <script>
+        // check if button pressed
+        $(document).on('click','#add-cart',function(e){
+          e.preventDefault();
+          $.ajax({
+            type: 'POST',
+            url: "{% url 'cart_add'  %}",
+            data :{
+              product_id : $('#add-cart').val(),
+              csrfmiddlewaretoken : '{{csrf_token}}',
+              action : 'post'
+            },
+            success:function(json){
+              // console.log(json)
+              document.getElementById("cart_quantity").
+                  textContent = json.qty
+            },
+            error:function(xhr,errmsg,err){
+              
+            }
+          });
+        })
+        </script>
+        
+        {% endfor %}
+        {% else %}
+        there is nothing in your cart...
+    {% endif %}
+        </div>
+ 
+ <script>
+// update cart
+$(document).on('click','.update-cart',function(e){
+  e.preventDefault();
+  // grab the product id
+  var productid = $(this).data('index');
+
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'cart_update'%}",
+    data :{
+      product_id : $(this).data('index'),
+      product_qty : $('#select' + productid + 'option:selected').text(),
+      csrfmiddlewaretoken : '{{csrf_token}}',
+      action : 'post'
+    },
+    success:function(json){
+      // console.log(json)
+      // document.getElementById("cart_quantity").
+      //     textContent = json.qty
+      location.reload();
+    },
+    error:function(xhr,errmsg,err){
+      
+    }
+  });
+})
+
+
+// delete item form cart
+$(document).on('click','.delete-product',function(e){
+  e.preventDefault();
+  // grab the product id
+  //var productid = $(this).data('index');
+
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'cart_delete'%}",
+    data :{
+      product_id : $(this).data('index'),
+      csrfmiddlewaretoken : '{{csrf_token}}',
+      action : 'post'
+    },
+    success:function(json){
+      // console.log(json)
+      // document.getElementById("cart_quantity").
+      //     textContent = json.qty
+      location.reload();
+    },
+    error:function(xhr,errmsg,err){
+      
+    }
+  });
+})
+ </script>     
+{%endblock%}
