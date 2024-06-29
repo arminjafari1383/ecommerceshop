@@ -17,7 +17,7 @@
             <div class="col-8">
                 <form method="POST" action="{% url 'update_user'%}">
                     {% csrf_token %}
-                    {{ user_form.as_p}}
+                    {{ user_form.as_p }}
                     <br /><br/>
                     <button type="submit" class="btn btn-secondary">update profile</button>
 </form>
