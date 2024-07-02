@@ -45,8 +45,8 @@ def register_user(request):
             #log in user
             user = authenticate(username=username,password=password)
             login(request, user)
-            messages.success(request,("your register succesfully"))
-            return redirect('home')
+            messages.success(request,("Username Created - please Fill out user Info Below..."))
+            return redirect('update_info')
         else:
             messages.success(request,("whops have problem please try again!!"))
             return redirect('register')
@@ -127,3 +127,21 @@ def update_password(request):
     else:
         messages.success(request,"YOU MUST BE LOGGED IN TO VIEW THAT PAGE..")
         return redirect('home')
+
+
+def update_info(request):
+        if request.user.is_authenticated:
+            current_user = Profile.objects.get(user__id = request.user.id)
+            form = UserInfoForm(request.POST or None,instance = current_user)
+
+
+            if form.is_valid():
+                form.save()
+                messages.success(request,"your info has been updated!!")
+                return redirect('home')
+            return render(request,"update_info.html",{'form':form})
+
+
+        else:
+            messages.success(request,"you must BE logged In to access to pages")
+            return redirect('home')
