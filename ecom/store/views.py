@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import *
 from django import forms
+from django.db.models import Q
 
 def home(request):
     products = Product.objects.all()
@@ -145,3 +146,17 @@ def update_info(request):
         else:
             messages.success(request,"you must BE logged In to access to pages")
             return redirect('home')
+def search(request):
+    #determine if they filled out the form
+    if request.method == "POST":
+        searched = request.POST['searched']
+        #Query The Products DB Model 
+        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
+        # Test for null
+        if not searched:
+             messages.success(request,"the product dosen't Exists...please try again")
+             return render(request,"search.html",{})
+        else:
+            return render(request,"search.html",{'searched':searched})
+    else:
+        return render(request,"search.html",{})
