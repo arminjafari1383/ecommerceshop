@@ -60,35 +60,14 @@
                       <a href="{% url 'home' %}" class="btn btn-secondary">home</a>
                       <!-- <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">add to cart</button> -->
                       <button type="button" data-index="{{product.id}}" class="btn btn-secondary update-cart">Upadate</button>
-                      <button type="button" value="{{product.id}}" class="btn btn-danger delete-product" id="add-cart">Remove</button>
+                      <button type="button" value="{{product.id}}" class="btn btn-danger  " id="delete-cart">Remove</button>
+                      <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">add to cart</button>
                     </center>
                     </div>
                   </div>
                 </div>
               </div>
-        <script>
-        // check if button pressed
-        $(document).on('click','#add-cart',function(e){
-          e.preventDefault();
-          $.ajax({
-            type: 'POST',
-            url: "{% url 'cart_add'  %}",
-            data :{
-              product_id : $('#add-cart').val(),
-              csrfmiddlewaretoken : '{{csrf_token}}',
-              action : 'post'
-            },
-            success:function(json){
-              // console.log(json)
-              document.getElementById("cart_quantity").
-                  textContent = json.qty
-            },
-            error:function(xhr,errmsg,err){
-              
-            }
-          });
-        })
-        </script>
+        
         
         {% endfor %}
         {% else %}
@@ -96,59 +75,28 @@
     {% endif %}
         </div>
  
- <script>
-// update cart
-$(document).on('click','.update-cart',function(e){
+<script>
+// check if button pressed
+$(document).on('click','#delete-cart',function(e){
   e.preventDefault();
-  // grab the product id
-  var productid = $(this).data('index');
-
   $.ajax({
     type: 'POST',
-    url: "{% url 'cart_update'%}",
+    url: "{% url 'cart_delete'  %}",
     data :{
-      product_id : $(this).data('index'),
-      product_qty : $('#select' + productid + 'option:selected').text(),
+      product_id : $('#delete-cart').val(),
+      product_qty : $('#qty-cart option:selected').text(),
       csrfmiddlewaretoken : '{{csrf_token}}',
       action : 'post'
     },
     success:function(json){
       // console.log(json)
-      // document.getElementById("cart_quantity").
-      //     textContent = json.qty
-      location.reload();
+      document.getElementById("cart_quantity").
+          textContent = json.qty
     },
     error:function(xhr,errmsg,err){
       
     }
   });
 })
-
-
-// delete item form cart
-$(document).on('click','.delete-product',function(e){
-  e.preventDefault();
-  // grab the product id
-  //var productid = $(this).data('index');
-
-  $.ajax({
-    type: 'POST',
-    url: "{% url 'cart_delete'%}",
-    data :{
-      product_id : $(this).data('index'),
-      csrfmiddlewaretoken : '{{csrf_token}}',
-      action : 'post'
-    },
-    success:function(json){
-      // console.log(json)
-      // document.getElementById("cart_quantity").
-      //     textContent = json.qty
-      location.reload();
-    },
-    error:function(xhr,errmsg,err){
-      
-    }
-  });
-})
- </script>     
+</script>
 {%endblock%}
