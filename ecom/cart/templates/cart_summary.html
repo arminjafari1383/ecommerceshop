@@ -61,7 +61,7 @@
                       <!-- <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">add to cart</button> -->
                       <button type="button" data-index="{{product.id}}" class="btn btn-secondary update-cart">Upadate</button>
                       <button type="button" value="{{product.id}}" class="btn btn-danger  " id="delete-cart">Remove</button>
-                      <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">add to cart</button>
+                      <!-- <button type="button" value="{{product.id}}" class="btn btn-secondary" id="add-cart">add to cart</button> -->
                     </center>
                     </div>
                   </div>
@@ -70,6 +70,9 @@
         
         
         {% endfor %}
+        <div align="right">
+          <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+        </div>
         {% else %}
         there is nothing in your cart...
     {% endif %}
