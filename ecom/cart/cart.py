@@ -91,3 +91,26 @@ class Cart():
             carty = carty.replace("\'","\"")
             #save carty to the profile model
             current_user.update(old_cart=str(carty))
+    def cart_total(self):
+    # Get product ids
+        product_ids = self.cart.keys()
+    # Lookup those keys in our products database model
+        products = Product.objects.filter(id__in=product_ids)
+        quantities = self.cart
+    # Start counting at 0
+        total = 0
+        for key, value in quantities.items():
+        # Convert key string into integer so we can do math
+            key = int(key)
+            try:
+                value = int(value)  # Ensure quantity is an integer
+            except ValueError:
+                continue  # Skip this item if it can't be converted to an integer
+            for product in products:
+                if product.id == key:
+                    if product.is_sale:
+                        total = total + (product.sale_price * value)
+                    else:
+                        total = total + (product.price * value)
+            return total
+  
