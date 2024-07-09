@@ -5,6 +5,9 @@ from payment.models import *
 from django.shortcuts import  get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
+from store.models import Product
+
+
 
 def billing_info(request):
     if request.POST:
@@ -105,6 +108,24 @@ def process_order(request):
             amount_paid=amount_paid
         )
         create_order.save()
+        #Add order items
+
+        #Get the order ID
+        order_id = create_order.pk
+
+        #Get product Info
+        for product in cart_products():
+            #Get product ID
+            product_id =  product.id
+            #Get product price
+            if product.is_sale:
+                price = product.sale_price
+            else:
+                price = product.price
+                #Get order item
+                create_order_item = OrderItem(order_id=order_id,product_id=product_id,user=user,price=price)
+                create_order_item .save()
+        
         messages.success(request, "Order placed!")
         return redirect('home')
 
